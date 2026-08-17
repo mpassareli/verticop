@@ -146,3 +146,5 @@ do que já existia, graças aos `if not exists`/`on conflict do nothing`.
   em **Authentication → Policies**.
 - **Quero resetar todo o progresso**: no Supabase, vá em **Table Editor → progress** e apague as linhas
   do seu usuário (ou a tabela inteira, se for só teste).
+
+  ---
