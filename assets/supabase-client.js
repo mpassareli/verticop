@@ -6,7 +6,7 @@
 // Essas chaves são públicas por natureza (protegidas pelas regras de RLS), então
 // não tem problema elas ficarem visíveis no código do site.
 
-const SUPABASE_URL = "COLE_AQUI_A_SUA_PROJECT_URL";
-const SUPABASE_ANON_KEY = "COLE_AQUI_A_SUA_ANON_KEY";
+const SUPABASE_URL = "https://bxwzzlhwvegoxbxqzdzn.supabase.co/rest/v1/";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9. yJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ4d3p6bGh3dmVnb3hieHF6ZHpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3NTYxNDgsImV4cCI6MjEwMjMzMjE0OH0.6NXmtfgd3UjM2cS2IajGyGonFvJVCEx9BcoV71jNw-k";
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
