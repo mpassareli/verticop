@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Administrativo — Edital PCPR 2026</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 60px; }
+  .admin-topbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid var(--line); }
+  .admin-title { font-size: 20px; margin: 26px 0 4px; }
+  .admin-sub { color: var(--text-2); font-size: 12.5px; margin-bottom: 20px; }
+  .admin-summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 22px; }
+  .admin-summary .stat-card { padding: 12px 14px; }
+  .admin-search { margin-bottom: 14px; }
+  .admin-search input {
+    width: 100%; max-width: 320px; background: var(--bg-1); border: 1px solid var(--line-light);
+    border-radius: 5px; padding: 8px 11px; color: var(--text-0); font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+  }
+  .admin-search input:focus { outline: none; border-color: var(--accent); }
+  table.admin-table { width: 100%; border-collapse: collapse; background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+  table.admin-table th {
+    text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2);
+    font-family: 'IBM Plex Mono', monospace; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg-0);
+  }
+  table.admin-table td { padding: 10px 14px; border-bottom: 1px solid rgba(42,42,42,0.6); font-size: 12.5px; vertical-align: middle; }
+  table.admin-table tr:last-child td { border-bottom: none; }
+  table.admin-table tr:hover td { background: rgba(255,255,255,0.015); }
+  .u-name { color: var(--text-0); font-weight: 600; }
+  .u-email { color: var(--text-2); font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
+  .mini-bar { width: 90px; height: 5px; background: var(--bg-0); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-right: 8px; }
+  .mini-bar-fill { height: 100%; background: var(--white); }
+  .cell-pct { font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; color: var(--text-1); }
+  .reset-btn {
+    background: var(--bg-2); border: 1px solid var(--line-light); color: var(--text-1);
+    border-radius: 4px; padding: 5px 10px; font-size: 11px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--text-0); color: var(--text-0); }
+  #admin-denied, #admin-loading {
+    text-align: center; color: var(--text-2); padding: 80px 20px; font-size: 13.5px;
+  }
+  #admin-denied strong { color: var(--text-0); display: block; margin-bottom: 8px; font-size: 16px; }
+  .settings-card { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 10px; max-width: 480px; }
+  .crest-row { display: flex; align-items: center; gap: 12px; }
+  .crest-preview { width: 52px; height: 52px; border-radius: 8px; background: var(--bg-0); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+  .crest-preview img { width: 100%; height: 100%; object-fit: contain; }
+  .settings-card input[type="file"] { color: var(--text-1); font-size: 12px; }
+  .settings-error { color: #e2b3a8; font-size: 12px; margin: 10px 0; display: none; }
+  .settings-saved { color: var(--text-1); font-size: 12px; margin-left: 12px; display: none; }
+</style>
+</head>
+<body>
+
+<!-- Tela de login (idêntica à principal) -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="badge-mark">
+      <svg width="42" height="48" viewBox="0 0 42 48" fill="none">
+        <path d="M21 1 L40 8 V22 C40 34 32 43 21 47 C10 43 2 34 2 22 V8 Z" fill="#141414" stroke="#8f8f8e" stroke-width="1.5"/>
+        <path d="M21 6 L35 11 V22 C35 31.5 29 38.5 21 42 C13 38.5 7 31.5 7 22 V11 Z" fill="none" stroke="#8f8f8e" stroke-width="1"/>
+        <path d="M21 13 L21 33 M13 21 L29 21" stroke="#d4d4d3" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="21" cy="21" r="4.5" fill="none" stroke="#d4d4d3" stroke-width="1.4"/>
+      </svg>
+      <div class="badge-text"><div class="badge-title">Polícia Civil</div><div class="badge-sub">Estado do Paraná</div></div>
+    </div>
+    <div class="login-title">Painel Administrativo</div>
+    <div class="login-subtitle">Acesso restrito</div>
+    <div class="login-error" id="login-error"></div>
+    <form id="login-form">
+      <div class="field"><label>E-mail</label><input type="email" id="login-email" required autocomplete="email"></div>
+      <div class="field"><label>Senha</label><input type="password" id="login-password" required autocomplete="current-password" minlength="6"></div>
+      <button type="submit" class="btn btn-primary" id="login-submit">Entrar</button>
+    </form>
+    <div class="demo-note">Use o mesmo login da plataforma de estudos.<br>Apenas contas marcadas como administrador têm acesso.</div>
+  </div>
+</div>
+
+<!-- Acesso negado -->
+<div id="admin-denied" style="display:none;">
+  <strong>Acesso restrito</strong>
+  Esta conta não tem permissão de administrador.
+  <div style="margin-top:16px;"><button class="btn-ghost" id="denied-logout">Sair</button></div>
+</div>
+
+<div id="admin-loading" style="display:none;">Carregando painel...</div>
+
+<!-- Painel -->
+<div id="admin-screen" style="display:none;">
+  <div class="admin-topbar">
+    <div class="badge-mark">
+      <svg width="28" height="32" viewBox="0 0 42 48" fill="none">
+        <path d="M21 1 L40 8 V22 C40 34 32 43 21 47 C10 43 2 34 2 22 V8 Z" fill="#141414" stroke="#8f8f8e" stroke-width="1.5"/>
+        <path d="M21 13 L21 33 M13 21 L29 21" stroke="#d4d4d3" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="21" cy="21" r="4.5" fill="none" stroke="#d4d4d3" stroke-width="1.4"/>
+      </svg>
+      <div class="badge-text"><div class="badge-title">PCPR</div><div class="badge-sub">Painel Administrativo</div></div>
+    </div>
+    <div class="user-box">
+      <span class="user-name" id="admin-user-name"></span>
+      <a href="index.html" class="btn-ghost" style="text-decoration:none;">Ver edital</a>
+      <button class="btn-ghost" id="admin-logout-btn">Sair</button>
+    </div>
+  </div>
+
+  <div class="admin-wrap">
+    <div class="admin-title">Configurações do edital</div>
+    <div class="admin-sub">Título exibido no topo da plataforma e brasão da instituição do concurso.</div>
+
+    <div class="settings-card">
+      <div class="field">
+        <label>Título (H1)</label>
+        <input type="text" id="settings-title" placeholder="Agente de Polícia Judiciária · PCPR 2026">
+      </div>
+      <div class="field">
+        <label>Brasão da instituição</label>
+        <div class="crest-row">
+          <div class="crest-preview" id="crest-preview">
+            <img id="crest-preview-img" style="display:none;">
+          </div>
+          <input type="file" id="settings-crest-file" accept="image/*">
+        </div>
+      </div>
+      <div class="settings-error" id="settings-error"></div>
+      <button class="btn btn-primary" id="settings-save-btn" style="width:auto; padding:9px 22px;">Salvar</button>
+      <span class="settings-saved" id="settings-saved">Salvo ✓</span>
+    </div>
+
+    <div class="admin-title" style="margin-top:34px;">Candidatos cadastrados</div>
+    <div class="admin-sub">Visão geral do progresso de todos que usam a plataforma.</div>
+
+    <div class="admin-summary">
+      <div class="stat-card">
+        <div class="stat-label">Candidatos</div>
+        <div class="stat-value mono" id="admin-total-users">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Progresso médio</div>
+        <div class="stat-value" id="admin-avg-progresso">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Revisões médias</div>
+        <div class="stat-value" id="admin-avg-revisoes">0%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Questões (total geral)</div>
+        <div class="stat-value mono" id="admin-total-questoes">0</div>
+      </div>
+    </div>
+
+    <div class="admin-search">
+      <input type="text" id="admin-search-input" placeholder="Buscar por nome ou e-mail...">
+    </div>
+
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Candidato</th>
+          <th>Progresso</th>
+          <th>Revisões</th>
+          <th>Questões</th>
+          <th>Última atividade</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="admin-table-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/data.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/admin.js"></script>
+</body>
+</html>
