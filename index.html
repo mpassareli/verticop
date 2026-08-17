@@ -25,12 +25,23 @@
       </div>
     </div>
 
-    <div class="login-title">Edital Verticalizado<br>Agente de Polícia Judiciária</div>
-    <div class="login-subtitle">Concurso PCPR 2026</div>
+    <div class="login-title">Plataforma de Editais Verticalizados</div>
 
     <div class="login-error" id="login-error"></div>
 
     <form id="login-form">
+      <div class="field signup-only" style="display:none;">
+        <label>Nome</label>
+        <input type="text" id="signup-firstname" autocomplete="given-name">
+      </div>
+      <div class="field signup-only" style="display:none;">
+        <label>Sobrenome</label>
+        <input type="text" id="signup-lastname" autocomplete="family-name">
+      </div>
+      <div class="field signup-only" style="display:none;">
+        <label>Data de nascimento</label>
+        <input type="date" id="signup-birthdate" autocomplete="bday">
+      </div>
       <div class="field">
         <label>E-mail</label>
         <input type="email" id="login-email" required autocomplete="email">
@@ -38,6 +49,10 @@
       <div class="field">
         <label>Senha</label>
         <input type="password" id="login-password" required autocomplete="current-password" minlength="6">
+      </div>
+      <div class="field signup-only" style="display:none;">
+        <label>Confirmar senha</label>
+        <input type="password" id="signup-password-confirm" autocomplete="new-password" minlength="6">
       </div>
       <button type="submit" class="btn btn-primary" id="login-submit">Entrar</button>
     </form>
@@ -76,7 +91,6 @@
     </div>
     <div class="user-box">
       <span class="user-name" id="user-name"></span>
-      <a href="admin.html" class="btn-ghost" style="text-decoration:none;">Admin</a>
       <button class="btn-ghost" id="logout-btn">Sair</button>
     </div>
   </div>
