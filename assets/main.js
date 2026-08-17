@@ -33,12 +33,15 @@ const loginForm = document.getElementById("login-form");
 const loginSubmitBtn = document.getElementById("login-submit");
 const authModeLabel = document.getElementById("auth-mode-label");
 const authToggleBtn = document.getElementById("auth-toggle-btn");
+const signupOnlyFields = document.querySelectorAll(".signup-only");
 
 let authMode = "signin"; // ou "signup"
 
 authToggleBtn.addEventListener("click", () => {
   authMode = authMode === "signin" ? "signup" : "signin";
-  if (authMode === "signup") {
+  const isSignup = authMode === "signup";
+  signupOnlyFields.forEach(field => { field.style.display = isSignup ? "block" : "none"; });
+  if (isSignup) {
     authModeLabel.textContent = "Já tem conta?";
     authToggleBtn.textContent = "Entrar";
     loginSubmitBtn.textContent = "Criar conta";
@@ -64,18 +67,57 @@ loginForm.addEventListener("submit", async (e) => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value;
 
+  if (authMode === "signup") {
+    const firstName = document.getElementById("signup-firstname").value.trim();
+    const lastName = document.getElementById("signup-lastname").value.trim();
+    const birthdate = document.getElementById("signup-birthdate").value;
+    const passwordConfirm = document.getElementById("signup-password-confirm").value;
+
+    if (!firstName || !lastName) {
+      showError("Preencha nome e sobrenome.");
+      return;
+    }
+    if (!birthdate) {
+      showError("Informe sua data de nascimento.");
+      return;
+    }
+    if (password !== passwordConfirm) {
+      showError("As senhas não conferem.");
+      return;
+    }
+
+    loginSubmitBtn.disabled = true;
+    try {
+      const result = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: `${firstName} ${lastName}`,
+            first_name: firstName,
+            last_name: lastName,
+            birthdate: birthdate
+          }
+        }
+      });
+      if (result.error) {
+        showError(traduzErro(result.error.message));
+      } else if (!result.data.session) {
+        showError("Conta criada! Verifique seu e-mail para confirmar antes de entrar.");
+      }
+    } catch (err) {
+      showError("Não foi possível conectar. Verifique sua internet.");
+    } finally {
+      loginSubmitBtn.disabled = false;
+    }
+    return;
+  }
+
   loginSubmitBtn.disabled = true;
   try {
-    let result;
-    if (authMode === "signup") {
-      result = await supabaseClient.auth.signUp({ email, password });
-    } else {
-      result = await supabaseClient.auth.signInWithPassword({ email, password });
-    }
+    const result = await supabaseClient.auth.signInWithPassword({ email, password });
     if (result.error) {
       showError(traduzErro(result.error.message));
-    } else if (authMode === "signup" && !result.data.session) {
-      showError("Conta criada! Verifique seu e-mail para confirmar antes de entrar.");
     }
     // se deu certo, o listener onAuthStateChange cuida da troca de tela
   } catch (err) {
